@@ -1,0 +1,108 @@
+﻿@page "/newses-list"
+@using Blazor.Business.Repository.IRepository
+@using Application.DTOs
+@inject INewsRepository NewsRepository
+
+
+<div class="latest-posts">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="blog-title-span">
+                        <span class="title">جستجو برای : <input type="text" @bind="Filter.Title" class="form-control" placeholder="جستجو ..." /> </span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success btn-block" @onclick="() => FilterNewsesData()">جستجو</button>
+                </div>
+            </div>
+
+            @if (Filter.Newses != null && Filter.Newses.Any())
+            {
+                @foreach (var news in Filter.Newses)
+                {
+                    <div class="col-md-3">
+                        <div class="post-box">
+                            <NavLink href="@($"/newses-list/{news.NewsId}")">
+                                <figure>
+                                    <img src="/images/@news.ImageName" alt="">
+                                    <figcaption class="meta-fig">
+                                        <span><i class="fa fa-clock-o"></i> 99/3/20</span>&nbsp;
+                                        <span><i class="fa fa-comment-o"></i> 12</span>
+                                    </figcaption>
+                                    <figcaption class="view">
+                                        <span>بخش ویژه</span>
+                                        <span>انجمن</span>
+                                        <span>اتاق خبر</span>
+                                    </figcaption>
+                                </figure>
+                            </NavLink>
+                            <div class="text-p">
+                                <NavLink href="@($"/newses-list/{news.NewsId}")">
+                                    <h5>@news.Title</h5>
+                                    <p>
+                                        @news.ShortDescription
+                                    </p>
+                                </NavLink>
+                                <div class="text-rigt">
+                                    <a href="#">
+                                    </a><a href="#">ادامه ...</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-md-12 text-center">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    @if (Filter.Newses != null && Filter.Newses.Any())
+                    {
+                        @if (Filter.Page > 1)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="() => HandlePageClick(Filter.Page - 1)">قبلی</a></li>
+                        }
+                        @for (int i = Filter.StartPage; i <= Filter.EndPage; i++)
+                        {
+                            var pageId = i;
+                            <li class="page-item @(Filter.Page == pageId ?"active":"")"><a class="page-link" @onclick="() => HandlePageClick(pageId)">@pageId</a></li>
+                        }
+
+                        if (Filter.Page < Filter.EndPage)
+                        {
+                            <li class="page-item"><a class="page-link" @onclick="() => HandlePageClick(Filter.Page + 1)">بعدی</a></li>
+
+                        }
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+
+@code
+{
+    private FilterNewsesDTO Filter = new FilterNewsesDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FilterNewsesData();
+    }
+
+    private async Task HandlePageClick(int page)
+    {
+        Filter.Page = page;
+        await FilterNewsesData();
+    }
+
+    private async Task FilterNewsesData()
+    {
+        Filter.Take = 2;
+        Filter = await NewsRepository.FilterNewses(Filter);
+    }
+}

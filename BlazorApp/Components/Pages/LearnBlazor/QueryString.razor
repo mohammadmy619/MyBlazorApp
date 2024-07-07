@@ -1,0 +1,38 @@
+﻿@page "/query-string"
+@inject NavigationManager NavigationManager
+<h3>QueryString</h3>
+<div>
+    <p>
+        parameter 1 = @Parameter1
+    </p>
+    <p>
+        parameter 2 = @Parameter2
+    </p>
+    <hr />
+    <a class="btn btn-success" @onclick="GetParams">
+        Load Parameters
+    </a>
+    <button class="btn btn-success" @onclick="RedirectToIndex">
+        Go To Index Page
+    </button>
+</div>
+
+@code {
+    public string Parameter1 { get; set; }
+    public string Parameter2 { get; set; }
+
+    private void GetParams()
+    {
+        var absoluteUri = new Uri(NavigationManager.Uri);
+        var queryParam = System.Web.HttpUtility.ParseQueryString(absoluteUri.Query);
+        Parameter1 = queryParam["param1"];
+        Parameter2 = queryParam["param2"];
+    }
+
+
+    private void RedirectToIndex()
+    {
+        NavigationManager.NavigateTo("counter");
+    }
+
+}

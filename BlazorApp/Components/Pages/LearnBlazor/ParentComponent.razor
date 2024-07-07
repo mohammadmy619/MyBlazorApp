@@ -1,0 +1,28 @@
+﻿@page "/parent-component"
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>ParentComponent</h3>
+
+            <CascadingValue Value="MessageForGrandChild" Name="str_data">
+                <CascadingValue Value="NumberDataForGrandChild" Name="int_data">
+                    <ChildComponent Title="this is title from parent" @ref="childComponent"></ChildComponent>
+                </CascadingValue>
+            </CascadingValue>
+        </div>
+        <div class="col-md-12">
+            <button class="btn btn-success" @onclick="() => childComponent.SwalSuccess()">
+                show alert from child component
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private ChildComponent childComponent;
+
+    private string MessageForGrandChild = "title from parent for grand child";
+    private string NumberDataForGrandChild = "24";
+}

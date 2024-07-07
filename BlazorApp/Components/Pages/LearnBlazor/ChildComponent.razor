@@ -1,0 +1,47 @@
+﻿@inject IJSRuntime JsRuntime
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div>
+                <p>
+                    @Title
+                </p>
+            </div>
+
+            <hr />
+
+            @if (InnerFragment != null)
+            {
+                @InnerFragment
+            }
+            else
+            {
+                <div class="border border-danger">
+                    no fragment
+                </div>
+            }
+
+            <hr />
+            <GrandChildComponent></GrandChildComponent>
+            @InnerFragment2
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment InnerFragment { get; set; }
+
+    [Parameter]
+    public RenderFragment InnerFragment2 { get; set; }
+
+    public async Task SwalSuccess()
+    {
+        await JsRuntime.InvokeVoidAsync("ShowSwal", "success", "عملیات مورد نظر با موفقیت انجام شد");
+    }
+}

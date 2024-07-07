@@ -1,0 +1,140 @@
+﻿@page "/newses"
+@using Application.DTOs
+@using Application.Utils
+@using Application.IService
+@using Blazor.Business.Repository.IRepository
+@using Blazor.Model.DTOs.Newses
+@using BlazorVilla_Server.Service.IService
+@using Balzor.Common
+@using Microsoft.AspNetCore.Authorization
+@inject INewsRepository NewsRepository
+@inject IJSRuntime JsRuntime
+@inject IFileUploadService FileUploadService
+@attribute [Authorize(Roles = StaticDetail.Role_Admin)]
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <NavLink href="newses/add-news" class="btn btn-info form-control">
+                ثبت خبر جدید
+            </NavLink>
+            <div class="post_content">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <td>عنوان</td>
+                            <td>تاریخ ثبت</td>
+                            <td>توضیحات کوتاه</td>
+                            <td>دستورات</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Newses.Any())
+                        {
+                            foreach (var news in Newses)
+                            {
+                                <tr>
+                                    <td>
+                                        @news.Title
+                                    </td>
+                                    <td>
+                                        @news.CreateDate
+                                    </td>
+                                    <td>
+                                        @news.ShortDescription
+                                    </td>
+                                    <td>
+                                        <NavLink href="@($"/newses/edit-news/{news.NewsId}")" class="btn btn-warning btn-block">ویرایش</NavLink>
+                                        <br />
+                                        <button class="btn btn-danger btn-block" @onclick="() => HandleDelete(news.NewsId)">حذف خبر</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">هیچ خبری یافت نشد</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <p>
+                IsConfirm : @IsConfirm
+            </p>
+        </div>
+    </div>
+</div>
+
+<DeleteConfirmation IsParentComponentProcessing="IsProcessing" ConfirmationChanged="ConfirmDelete_Click"></DeleteConfirmation>
+
+
+@code {
+    private IEnumerable<NewsDTO> Newses { get; set; } = new List<NewsDTO>();
+
+    private int? DeleteNewsId { get; set; } = null;
+
+    public bool IsProcessing { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Newses = await NewsRepository.GetAllNewses();
+    }
+
+    private string ConfirmMessage = "test confirm message";
+
+    private bool IsConfirm { get; set; }
+
+    private async Task HandleDelete(int newsId)
+    {
+        DeleteNewsId = newsId;
+        await JsRuntime.InvokeVoidAsync("showConfirmationModal");
+    }
+
+    public async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        IsProcessing = true;
+        if (isConfirmed && DeleteNewsId != null)
+        {
+            var news = await NewsRepository.GetNewsById(DeleteNewsId.Value);
+            await NewsRepository.RemoveNews(news);
+            FileUploadService.DeleteFile(news.ImageName);
+            // await JsRuntime.ToastrSuccess("خبر مورد نظر با موفقیت حذف شد");
+            Newses = await NewsRepository.GetAllNewses();
+        }
+
+        await JsRuntime.InvokeVoidAsync("hideConfirmationModal");
+        IsProcessing = false;
+    }
+
+
+    /*private async Task TestConfirmBox()
+        {
+        IsConfirm = await JsRuntime.InvokeAsync<bool>("confirm", ConfirmMessage);
+    }
+
+    private async Task TestSuccess()
+        {
+        await JsRuntime.ToastrSuccess("این یک پیغام موفقیت می باشد");
+    }
+
+    private async Task TestError()
+        {
+        await JsRuntime.ToastrError("این یک پیغام خطا می باشد");
+    }
+
+    private async Task SwalSuccess()
+        {
+        await JsRuntime.InvokeVoidAsync("ShowSwal", "success", "عملیات مورد نظر با موفقیت انجام شد");
+    }
+
+    private async Task SwalError()
+        {
+        await JsRuntime.InvokeVoidAsync("ShowSwal", "error", "عملیات مورد نظر با شکست مواجه شد");
+    }*/
+
+}

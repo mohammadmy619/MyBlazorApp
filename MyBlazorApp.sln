@@ -5,17 +5,17 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{F65C2242-CFB9-4046-9B00-8209A9F339D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domin", "Core\Domin\Domin.csproj", "{A6F04434-9615-429D-9AF2-6236BA4711A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domin", "Core\Domin\Domin.csproj", "{A6F04434-9615-429D-9AF2-6236BA4711A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Core\Application\Application.csproj", "{093B55FF-43E0-402B-A312-3786AFD7E3CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Core\Application\Application.csproj", "{093B55FF-43E0-402B-A312-3786AFD7E3CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{41984B93-BE03-403A-A118-3AA2B85ABAB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure\Infrastructure.csproj", "{36119CAF-7E95-4340-BA66-E93001A064FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure\Infrastructure.csproj", "{36119CAF-7E95-4340-BA66-E93001A064FB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{1E075BB7-4186-425C-BE37-0297C8D8B401}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{955DE9FB-7EDF-4DA6-84C6-E0503D64905F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{955DE9FB-7EDF-4DA6-84C6-E0503D64905F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

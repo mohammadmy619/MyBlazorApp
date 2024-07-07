@@ -1,0 +1,175 @@
+﻿@page "/newses/add-news"
+@page "/newses/edit-news/{Id:int}"
+@using Application.DTOs
+@using Application.IService
+@using Blazor.Model.DTOs.Newses
+@using Blazor.Business.Repository.IRepository
+@using Blazor.Data.Entities.NewsEntities
+@using System.IO
+@using BlazorApp.Helpers
+@using BlazorVilla_Server.Service.IService
+@inject INewsRepository NewsRepository
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@inject IFileUploadService FileUploadService
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="post_content">
+                <EditForm Model="@NewsModel" OnValidSubmit="HandleUpsertNews">
+                    <DataAnnotationsValidator />
+                    @*<ValidationSummary />*@
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>عنوان : </label>
+                            <InputText class="form-control" @bind-Value="@NewsModel.Title" placeholder="عنوان خبر" />
+                        </div>
+                        <ValidationMessage class="text-danger" style="color:red" For="() => NewsModel.Title" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>توضیحات کوتاه : </label>
+                            <InputTextArea class="form-control" @bind-Value="@NewsModel.ShortDescription" placeholder="توضیحات کوتاه" />
+                        </div>
+                        <ValidationMessage For="() => NewsModel.ShortDescription" style="color:red" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>توضیحات : </label>
+                            @* <InputTextArea class="form-control" @bind-Value="@NewsModel.Description" placeholder="توضیحات" /> *@
+                            <CKEditorBlazor Id="MyEditor" @bind-Value=@NewsModel.Description> </CKEditorBlazor>
+                        </div>
+                        <ValidationMessage For="() => NewsModel.Description" style="color:red" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>تصویر خبر : </label>
+                            <InputFile OnChange="HandleImageUpload" />
+                        </div>
+                        @if (!string.IsNullOrEmpty(NewsModel.ImageName))
+                        {
+                            <div class="row" style="margin: 20px 0">
+                                <div class="col-md-3">
+                                    <img src="/images/@NewsModel.ImageName" />
+                                    <a class="btn btn-danger" @onclick="() => DeleteImage()">
+                                        حذف تصویر
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <button class="btn btn-success" type="submit">@Title خبر</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    public string Title { get; set; } = "افزودن";
+
+    private NewsDTO NewsModel { get; set; } = new NewsDTO();
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationState;
+        if (!authenticationState.User.Identity.IsAuthenticated)
+        {
+            var uri = new Uri(NavigationManager.Uri);
+            NavigationManager.NavigateTo($"/identity/account/login?returnUrl={uri.LocalPath}");
+        }
+
+
+        if (Id != null)
+        {
+            // update
+            Title = "ویرایش";
+            NewsModel = await NewsRepository.GetNewsById(Id.Value);
+        }
+        else
+        {
+            // create
+        }
+    }
+
+    private async Task DeleteImage()
+    {
+        try
+        {
+            var result = FileUploadService.DeleteFile(NewsModel.ImageName);
+            if (result)
+            {
+                NewsModel.ImageName = "";
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(e.Message);
+        }
+    }
+
+
+    private async Task HandleUpsertNews()
+    {
+        try
+        {
+            var duplicateNews = await NewsRepository.IsNewsExistsByTitle(NewsModel.Title, NewsModel.NewsId);
+            if (duplicateNews != null)
+            {
+                await JsRuntime.ToastrError("خبر مورد نظر تکراری می باشد");
+                return;
+            }
+
+            if (NewsModel.NewsId != 0)
+            {
+                var editResult = await NewsRepository.UpdateNews(NewsModel.NewsId, NewsModel);
+                await JsRuntime.ToastrSuccess("خبر مورد نظر با موفقیت ویرایش شد");
+            }
+            else
+            {
+                var createResult = await NewsRepository.CreateNews(NewsModel);
+                await JsRuntime.ToastrSuccess("خبر مورد نظر با موفقیت ثبت شد");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        NavigationManager.NavigateTo("newses");
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            FileInfo fileInfo = new FileInfo(e.File.Name);
+            if (fileInfo.Extension.ToLower() == ".jpg" ||
+                fileInfo.Extension.ToLower() == ".png" ||
+                fileInfo.Extension.ToLower() == ".jpeg")
+            {
+                NewsModel.ImageName = await FileUploadService.UploadFile(e.File);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+}
+

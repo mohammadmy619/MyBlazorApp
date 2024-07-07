@@ -1,0 +1,21 @@
+﻿
+<div class="col-12">
+    <h2>
+        this is grand child component
+    </h2>
+    <p>
+        Grand Child String Data is = @MessageForGrandChild
+    </p>
+
+    <p>
+        Grand Child Number Data is = @NumberData
+    </p>
+</div>
+
+@code {
+    [CascadingParameter(Name = "str_data")]
+    public string MessageForGrandChild { get; set; }
+
+    [CascadingParameter(Name = "int_data")]
+    public string NumberData { get; set; }
+}

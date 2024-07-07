@@ -1,0 +1,16 @@
+﻿@page "/new-routing"
+@page "/second-routing"
+@page "/second-routing/{UrlParameter}"
+@page "/second-routing/{UrlParameter}/{SecondUrlParameter}"
+
+
+<h3>Url Parameter is : @UrlParameter</h3>
+<h3>Second Url Parameter is : @SecondUrlParameter</h3>
+
+@code {
+    [Parameter]
+    public string UrlParameter { get; set; }
+
+    [Parameter]
+    public string SecondUrlParameter { get; set; }
+}
