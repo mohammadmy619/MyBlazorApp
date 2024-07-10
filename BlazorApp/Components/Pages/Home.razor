@@ -1,7 +1,38 @@
 ﻿@page "/"
+@inject IJSRuntime JsRuntime
 
-<PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<div class="main-content">
+    <div class="clear-fix"></div>
+    <LatestNews />
+</div>
+
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("OnDocumentInit");
+    }
+}
+@* @page "/"
+@using Blazor.Business.Repository.IRepository
+@using Blazor.Model.DTOs.Newses
+@inject IJSRuntime JsRuntime
+
+
+
+<div class="main-content">
+    <div class="clear-fix"></div>
+    <LatestNews />
+</div>
+
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("OnDocumentInit");
+    }
+} *@

@@ -2,12 +2,8 @@
 @using Application.DTOs
 @using Application.Utils
 @using Application.IService
-@using Blazor.Business.Repository.IRepository
-@using Blazor.Model.DTOs.Newses
-@using BlazorVilla_Server.Service.IService
-@using Balzor.Common
 @using Microsoft.AspNetCore.Authorization
-@inject INewsRepository NewsRepository
+@inject INewsService NewsService
 @inject IJSRuntime JsRuntime
 @inject IFileUploadService FileUploadService
 @attribute [Authorize(Roles = StaticDetail.Role_Admin)]
@@ -82,7 +78,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Newses = await NewsRepository.GetAllNewses();
+        Newses = await NewsService.GetAllNewses();
     }
 
     private string ConfirmMessage = "test confirm message";
@@ -100,11 +96,11 @@
         IsProcessing = true;
         if (isConfirmed && DeleteNewsId != null)
         {
-            var news = await NewsRepository.GetNewsById(DeleteNewsId.Value);
-            await NewsRepository.RemoveNews(news);
+            var news = await NewsService.GetNewsById(DeleteNewsId.Value);
+            await NewsService.RemoveNews(news);
             FileUploadService.DeleteFile(news.ImageName);
             // await JsRuntime.ToastrSuccess("خبر مورد نظر با موفقیت حذف شد");
-            Newses = await NewsRepository.GetAllNewses();
+            Newses = await NewsService.GetAllNewses();
         }
 
         await JsRuntime.InvokeVoidAsync("hideConfirmationModal");

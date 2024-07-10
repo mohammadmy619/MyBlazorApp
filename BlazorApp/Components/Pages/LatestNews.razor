@@ -1,0 +1,29 @@
+﻿@using Application.DTOs
+@using Application.IService
+@inject INewsService NewsService
+
+<div class="latest-posts">
+    <div class="container-fluid">
+        <div class="blog-title-span">
+            <span class="title">آخرین مطالب</span>
+        </div>
+        @if (Newses != null && Newses.Any())
+        {
+            @foreach (var news in Newses)
+            {
+                <SingleNewsItem News="@news" />
+            }
+        }
+    </div>
+</div>
+
+@code
+{
+
+    private IEnumerable<NewsDTO> Newses { get; set; } = new List<NewsDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Newses = await NewsService.GetAllNewsesByCount(8);
+    }
+}

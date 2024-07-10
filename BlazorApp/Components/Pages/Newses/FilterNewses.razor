@@ -1,7 +1,7 @@
 ﻿@page "/newses-list"
-@using Blazor.Business.Repository.IRepository
+@using Application.IService
 @using Application.DTOs
-@inject INewsRepository NewsRepository
+@inject INewsService NewsService
 
 
 <div class="latest-posts">
@@ -103,6 +103,6 @@
     private async Task FilterNewsesData()
     {
         Filter.Take = 2;
-        Filter = await NewsRepository.FilterNewses(Filter);
+        Filter = await NewsService.FilterNewses(Filter);
     }
 }

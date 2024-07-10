@@ -1,0 +1,25 @@
+﻿<div class="border border-danger p-2">
+    <p>
+        @Text
+    </p>
+    <hr />
+    <label for="@Text">
+        <input type="checkbox" @onchange="ChangeSelectBox" id="@Text" /> @Text
+    </label>
+</div>
+<hr />
+
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+
+    public EventCallback<bool> OnChangeSelectBox { get; set; }
+
+    protected async Task ChangeSelectBox(ChangeEventArgs e)
+    {
+        await OnChangeSelectBox.InvokeAsync(((bool)e.Value));
+    }
+}

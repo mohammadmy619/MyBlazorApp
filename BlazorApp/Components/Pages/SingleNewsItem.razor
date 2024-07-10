@@ -1,0 +1,34 @@
+﻿@using Application.DTOs
+<div class="col-md-3">
+    <div class="post-box">
+        <a href="#">
+            <figure>
+                <img src="/images/@News.ImageName" alt="">
+                <figcaption class="meta-fig">
+                    <span><i class="fa fa-clock-o"></i> 99/3/20</span>&nbsp;
+                    <span><i class="fa fa-comment-o"></i> 12</span>
+                </figcaption>
+                <figcaption class="view">
+                    <span>بخش ویژه</span>
+                    <span>انجمن</span>
+                    <span>اتاق خبر</span>
+                </figcaption>
+            </figure>
+            <div class="text-p">
+                <h5>@News.Title</h5>
+                <p>
+                    @News.ShortDescription
+                </p>
+                <div class="text-rigt">
+                    <a href="#">ادامه ...</a>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public NewsDTO News { get; set; }
+}

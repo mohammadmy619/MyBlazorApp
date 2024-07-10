@@ -1,5 +1,7 @@
 ﻿using Domin.entites;
 using Domin.Entites;
+using Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,49 +12,86 @@ namespace Infrastructure.Repository
 {
     public class NewsRepository : INewsRepository
     {
-        public Task<News> CreateNews(News newsDTO)
+        private readonly ApplicationDbContext _DbContext;
+        public NewsRepository(ApplicationDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _DbContext = dbContext;
+        }
+        public async Task<News> CreateNews(News news)
+        {
+            await _DbContext.Newses.AddAsync(news);
+            _DbContext.SaveChanges();
+            return news;
         }
 
-        public Task<IEnumerable<News>> GetAllNewses()
+        public async Task<IEnumerable<News>> GetAllNewses()
         {
-            throw new NotImplementedException();
+            return await _DbContext.Newses.ToListAsync();
         }
 
-        public Task<IEnumerable<News>> GetAllNewsesByCount(int count)
+        public async Task<IEnumerable<News>> GetAllNewsesByCount(int count)
         {
-            throw new NotImplementedException();
+            return await _DbContext.Newses.Take(count).ToListAsync();
         }
 
-        public Task<News> GetNewsById(int newsId)
+        public async Task<News> GetNewsById(int newsId)
         {
-            throw new NotImplementedException();
+            return await _DbContext.Newses.Where(n => n.NewsId == newsId).FirstOrDefaultAsync();
+
         }
 
-        public Task<IQueryable<News>> GetQuery()
+        public IQueryable<News> GetQuery()
         {
-            throw new NotImplementedException();
+            return _DbContext.Newses.AsQueryable();
+           
         }
 
-        public Task<News> IsNewsExistsByTitle(string title, int newsId)
+        public async Task<News> IsNewsExistsByTitle(string title, int newsId)
         {
-            throw new NotImplementedException();
+            return await _DbContext.Newses.Where(n=>n.NewsId==newsId && n.Title==title).FirstOrDefaultAsync();
         }
 
-        public Task<int> RemoveNews(int newsId)
+        public async Task<int> RemoveNews(int newsId)
         {
-            throw new NotImplementedException();
+            var res = await _DbContext.Newses.FindAsync(newsId);
+            if (res != null)
+            {
+                _DbContext.Newses.Remove(res);
+                await _DbContext.SaveChangesAsync();
+
+                return res.NewsId;
+            }
+
+            return 0;
+         
         }
 
-        public Task<int> RemoveNews(News news)
+        public async Task<int> RemoveNews(News news)
         {
-            throw new NotImplementedException();
+            return await RemoveNews(news.NewsId);
         }
 
-        public Task<News> UpdateNews(int newsId, News newsDTO)
+        public async Task<News> UpdateNews(int newsId, News? news)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (newsId == news.NewsId)
+                {
+                    News newsDetail = await _DbContext.Newses.FindAsync(newsId);
+                    news.EditedBy = "";
+                    _DbContext.Newses.Update(news);
+                    await _DbContext.SaveChangesAsync();
+                    return newsDetail;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }

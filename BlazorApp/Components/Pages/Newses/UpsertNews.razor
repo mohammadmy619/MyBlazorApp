@@ -2,16 +2,11 @@
 @page "/newses/edit-news/{Id:int}"
 @using Application.DTOs
 @using Application.IService
-@using Blazor.Model.DTOs.Newses
-@using Blazor.Business.Repository.IRepository
-@using Blazor.Data.Entities.NewsEntities
-@using System.IO
 @using BlazorApp.Helpers
-@using BlazorVilla_Server.Service.IService
-@inject INewsRepository NewsRepository
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 @inject IFileUploadService FileUploadService
+@inject INewsService NewsService
 
 
 <div class="container">
@@ -97,7 +92,7 @@
         {
             // update
             Title = "ویرایش";
-            NewsModel = await NewsRepository.GetNewsById(Id.Value);
+            NewsModel = await NewsService.GetNewsById(Id.Value);
         }
         else
         {
@@ -126,7 +121,7 @@
     {
         try
         {
-            var duplicateNews = await NewsRepository.IsNewsExistsByTitle(NewsModel.Title, NewsModel.NewsId);
+            var duplicateNews = await NewsService.IsNewsExistsByTitle(NewsModel.Title, NewsModel.NewsId);
             if (duplicateNews != null)
             {
                 await JsRuntime.ToastrError("خبر مورد نظر تکراری می باشد");
@@ -135,12 +130,12 @@
 
             if (NewsModel.NewsId != 0)
             {
-                var editResult = await NewsRepository.UpdateNews(NewsModel.NewsId, NewsModel);
+                var editResult = await NewsService.UpdateNews(NewsModel.NewsId, NewsModel);
                 await JsRuntime.ToastrSuccess("خبر مورد نظر با موفقیت ویرایش شد");
             }
             else
             {
-                var createResult = await NewsRepository.CreateNews(NewsModel);
+                var createResult = await NewsService.CreateNews(NewsModel);
                 await JsRuntime.ToastrSuccess("خبر مورد نظر با موفقیت ثبت شد");
             }
         }
